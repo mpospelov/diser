@@ -11,11 +11,15 @@ class GeneticAlgorithm
   def find_solution
     @solution ||= begin
       i = 0
-      # while MAX_ITERATION_COUNT > i
-        new_population = @current_population.new_population(@fitness_fn, @population_size)
-
+      result = @first_population
+      while MAX_ITERATION_COUNT > i
+        @current_population.print_fitness_values(@fitness_fn)
+        result = @current_population
+        err, @current_population = @current_population.new_population(@fitness_fn, @population_size)
+        break if err
         i += 1
-      # end
+      end
+      result.solutions[0]
     end
   end
 

@@ -14,13 +14,14 @@ class SolutionFinderService
     population_size = (@customers.count * 0.1).to_i
     population_size.times do
       routes = []
-      @customers.shuffle.each_slice(@customers.count / @vehicle_count).with_index do |customers, id|
-        routes << Route.new(vehicle_id: id + 1, customers: customers.sort_by(&:time1))
+      @customers.shuffle.each_slice(@customers.count / @vehicle_count).with_index do |customers|
+        routes << Route.new(customers: customers.sort_by(&:time1))
       end
       solutions << Solution.new(routes: routes)
     end
     first_population = Population.new(solutions: solutions)
     first_population.print_fitness_values(fitness)
-    GeneticAlgorithm.new(fitness, first_population, population_size).find_solution
+    solution = GeneticAlgorithm.new(fitness, first_population, population_size).find_solution
+    file = File.open('output/out.json','w') { |f| f.write(solution.to_json) }
   end
 end

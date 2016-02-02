@@ -14,7 +14,12 @@ class Population
   attribute :solutions, Array[Solution]
 
   def new_population(fitness_fn, size)
-    par = calc_parents(fitness_fn, size)
+    err, parents = calc_parents(fitness_fn, size)
+    if err
+      [true, nil]
+    else
+      [false, Population.new(solutions: merge(parents))]
+    end
   end
 
   def print_fitness_values(fitness)
@@ -23,8 +28,19 @@ class Population
 
   private
 
+  def merge(parents)
+    parents.map do |(par1, par2)|
+      separate_point = rand([par1.routes.size, par2.routes.size].max)
+
+      left_part = par1.routes[0..separate_point]
+      right_part = par2.routes[(separate_point + 1)..-1]
+      Solution.new(routes: left_part | right_part)
+    end
+  end
+
   def calc_parents(fitness_fn, size)
     val = calc_fitness(fitness_fn)
+    return [true, []] if val.total_fitness == 0 # Stagnation
     result = []
     left_border = 0
     probability_ranges = val.fitness_value.map do |solution, values|
@@ -36,7 +52,7 @@ class Population
     end
     size.times do
       roulette1 = rand
-      first_parent = probability_ranges.detect { |(range, _)| range.include?(roulette1) }[1]
+      first_parent = probability_ranges.detect { |(range, _)| range.include?(roulette1) }
       second_parent = nil
       while !second_parent
         roulette2 = rand
@@ -44,9 +60,9 @@ class Population
           range.include?(roulette2) && parent != first_parent
         end
       end
-      result << [first_parent, second_parent]
+      result << [first_parent[1], second_parent[1]]
     end
-    result
+    [false, result]
   end
 
   def calc_fitness(fitness_fn)
@@ -59,6 +75,7 @@ class Population
         fitness_value[solution] = { value: fit_val }
         max = fit_val if fit_val > max
       end
+
       total_fitness = solutions.inject(0) { |acc, s| acc += max - fitness_value[s][:value] }
       solutions.each do |solution|
         fit_val_store = fitness_value[solution]

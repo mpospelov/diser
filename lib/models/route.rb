@@ -1,7 +1,6 @@
 class Route
   include Virtus.model
 
-  attribute :vehicle_id, Integer
   attribute :customers, Array[Customer]
 
   def distance
