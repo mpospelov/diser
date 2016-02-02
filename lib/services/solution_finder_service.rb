@@ -7,8 +7,8 @@ class SolutionFinderService
   end
 
   def genetic_algorithm
-    fitness = ->(solution, fitness_max) do
-      fitness_max - (solution.total_distance + 1 * solution.over_capacity + 1 * solution.total_over_time)
+    fitness = ->(solution) do
+      solution.total_distance + 1 * solution.over_capacity + 1 * solution.total_over_time
     end
     solutions = []
     population_size = (@customers.count * 0.1).to_i
