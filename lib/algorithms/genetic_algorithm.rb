@@ -3,6 +3,7 @@ class GeneticAlgorithm
     @fitness_fn = fitness_fn
     @first_population = first_population
     @population_size = population_size
+    @max_fitness = -1.0/0 # -Infinity
   end
 
   def find_solution
@@ -13,7 +14,9 @@ class GeneticAlgorithm
   def calc_fintess(solution)
     @fitness_store ||= {}
     @fitness_store[solution.object_id] ||= begin
-      fitness_fn.call(solution)
+      result = fitness_fn.call(solution, @max_fitness)
+      @max_fitness = result if @max_fitness < result
+      result
     end
   end
 end
