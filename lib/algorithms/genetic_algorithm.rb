@@ -3,7 +3,7 @@ class GeneticAlgorithm
     @fitness_fn = fitness_fn
     @first_population = first_population
     @population_size = population_size
-    @max_fitness = -1.0/0 # -Infinity
+    @max_fitness = -1_000_000_000 # -Infinity
   end
 
   def find_solution
