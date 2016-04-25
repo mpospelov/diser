@@ -1,6 +1,7 @@
 require_relative 'solution'
 
 class Population
+  @@index = 0
   include Virtus.model
 
   class FitnessResult
@@ -13,6 +14,12 @@ class Population
 
   attribute :solutions, Array[Solution]
 
+  def initialize(*)
+    super
+    @id = @@index
+    @@index += 1
+  end
+
   def new_population(fitness_fn, size)
     err, parents = calc_parents(fitness_fn, size)
     if err
@@ -23,7 +30,9 @@ class Population
   end
 
   def print_fitness_values(fitness)
-    puts solutions.map { |s| fitness.call(s) }.to_s
+    result = solutions.map { |s| fitness.call(s) }
+    file = PlotService.create_plot_file(result)
+    PlotService.new('bar_plot', file, "output/random/#{@id}population.png").call
   end
 
   private

@@ -1,4 +1,5 @@
 require 'bundler'
+APP_PATH = Dir.pwd.freeze
 
 Bundler.require(:default)
 app_files = Dir['lib/**/*.rb']

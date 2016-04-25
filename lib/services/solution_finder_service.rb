@@ -11,11 +11,11 @@ class SolutionFinderService
       solution.total_distance + 1 * solution.over_capacity + 1 * solution.total_over_time
     end
     solutions = []
-    population_size = (@customers.count * 0.1).to_i
+    population_size = (@customers.count * 10).to_i
     population_size.times do
       routes = []
       @customers.shuffle.each_slice(@customers.count / @vehicle_count).with_index do |customers|
-        routes << Route.new(customers: customers.sort_by(&:time1))
+        routes << Route.new(customers: customers.sort_by(&:time1)) # First heuristic we sorting customers by time1
       end
       solutions << Solution.new(routes: routes)
     end
