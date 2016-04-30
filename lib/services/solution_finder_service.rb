@@ -1,27 +1,21 @@
 require_relative '../models/solution'
-
-class SolutionFinderService
-  def initialize(customers, vehicle_count)
-    @customers = customers
-    @vehicle_count = vehicle_count
-  end
-
-  def genetic_algorithm
-    fitness = ->(solution) do
-      solution.total_distance + 1 * solution.over_capacity + 1 * solution.total_over_time
+module VRP
+  class SolutionFinderService
+    def initialize(customers, vehicle_count)
+      @customers = customers
+      @vehicle_count = vehicle_count
     end
-    solutions = []
-    population_size = (@customers.count * 10).to_i
-    population_size.times do
-      routes = []
-      @customers.shuffle.each_slice(@customers.count / @vehicle_count).with_index do |customers|
-        routes << Route.new(customers: customers.sort_by(&:time1)) # First heuristic we sorting customers by time1
+
+    def genetic_algorithm
+      fitness = ->(solution) do
+        solution.total_distance + 1 * solution.over_capacity + 1 * solution.total_over_time
       end
-      solutions << Solution.new(routes: routes)
+
+      ga_service = VRP::GeneticAlgorithm.new(fitness, (@customers.count * 100).to_i, @customers, @vehicle_count)
+      ga_service.generate_random_population
+      solution = ga_service.find_solution
+      debugger
+      file = File.open('output/out.json','w') { |f| f.write(solution.to_json) }
     end
-    first_population = Population.new(solutions: solutions)
-    first_population.print_fitness_values(fitness)
-    solution = GeneticAlgorithm.new(fitness, first_population, population_size).find_solution
-    file = File.open('output/out.json','w') { |f| f.write(solution.to_json) }
   end
 end

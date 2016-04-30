@@ -2,11 +2,11 @@ require 'bundler'
 APP_PATH = Dir.pwd.freeze
 
 Bundler.require(:default)
-app_files = Dir['lib/**/*.rb']
-app_files.each { |f| require_relative f }
+require_relative './lib/vrp'
+require_relative './tsp_diser/V_1/lib/tsp'
 
-customer_parser = CustomerParserService.new(File.join(Dir.pwd, 'data/rc101.csv'))
+customer_parser = VRP::CustomerParserService.new(File.join(Dir.pwd, 'data/rc101.csv'))
 
-solution = SolutionFinderService.new(customer_parser.parse, 5)
+solution = VRP::SolutionFinderService.new(customer_parser.parse, 2)
 solution.genetic_algorithm
 puts 'a'

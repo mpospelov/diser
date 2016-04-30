@@ -1,1 +1,0 @@
-START_DEPOT_POSITION = [0, 0].freeze
